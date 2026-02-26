@@ -1,0 +1,127 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum BudgetType {
+  OPEX
+  CAPEX
+}
+
+enum CostCenter {
+  ENFORCE
+  DA
+  IP
+}
+
+enum PaymentMode {
+  ONE_OFF
+  MONTHLY
+  ANNUAL
+}
+
+enum CostStatus {
+  PLANNED
+  COMMITTED
+  PAID
+  CANCELLED
+}
+
+enum ScheduleStatus {
+  SCHEDULED
+  PAID
+  CANCELLED
+}
+
+enum BudgetLineSource {
+  EXCEL
+  MANUAL
+}
+
+model BudgetLine {
+  id         String           @id @default(cuid())
+  name       String
+  type       BudgetType
+  parentId   String?
+  parent     BudgetLine?      @relation("BudgetLineHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children   BudgetLine[]     @relation("BudgetLineHierarchy")
+  isGroup    Boolean          @default(false)
+  active     Boolean          @default(true)
+  source     BudgetLineSource @default(MANUAL)
+  allocations BudgetAllocation[]
+  costEntries CostEntry[]
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  @@index([parentId])
+  @@index([type])
+  @@unique([name, type, parentId])
+}
+
+model BudgetAllocation {
+  id            String     @id @default(cuid())
+  year          Int
+  budgetLineId  String
+  budgetLine    BudgetLine @relation(fields: [budgetLineId], references: [id], onDelete: Cascade)
+  costCenter    CostCenter
+  amountPlanned Decimal
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@unique([year, budgetLineId, costCenter])
+  @@index([year, costCenter])
+}
+
+model CostEntry {
+  id              String           @id @default(cuid())
+  title           String
+  vendor          String?
+  budgetLineId    String
+  budgetLine      BudgetLine       @relation(fields: [budgetLineId], references: [id], onDelete: Restrict)
+  type            BudgetType
+  paymentMode     PaymentMode
+  startDate       DateTime?
+  endDate         DateTime?
+  oneOffDate      DateTime?
+  amountTotal     Decimal
+  amountPerPeriod Decimal?
+  notes           String?
+  status          CostStatus       @default(PLANNED)
+  splits          CostSplit[]
+  schedules       PaymentSchedule[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([type, status])
+  @@index([budgetLineId])
+}
+
+model CostSplit {
+  id         String     @id @default(cuid())
+  costEntryId String
+  costEntry  CostEntry  @relation(fields: [costEntryId], references: [id], onDelete: Cascade)
+  costCenter CostCenter
+  percent    Decimal
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@unique([costEntryId, costCenter])
+}
+
+model PaymentSchedule {
+  id         String         @id @default(cuid())
+  costEntryId String
+  costEntry  CostEntry      @relation(fields: [costEntryId], references: [id], onDelete: Cascade)
+  dueDate    DateTime
+  amount     Decimal
+  status     ScheduleStatus @default(SCHEDULED)
+  paidAt     DateTime?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  @@index([dueDate, status])
+  @@index([costEntryId])
+}
