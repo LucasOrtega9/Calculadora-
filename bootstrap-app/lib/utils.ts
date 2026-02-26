@@ -1,5 +1,4 @@
 import { type ClassValue, clsx } from "clsx";
-import { Decimal } from "@prisma/client/runtime/library";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -18,11 +17,14 @@ export function formatPercent(value: number) {
   return `${value.toFixed(2).replace(".", ",")}%`;
 }
 
-export function decimalToNumber(value: Decimal | number | string | null | undefined) {
+export function decimalToNumber(value: unknown) {
   if (value === null || value === undefined) return 0;
   if (typeof value === "number") return value;
   if (typeof value === "string") return Number(value);
-  return Number(value.toString());
+  if (typeof value === "object" && "toString" in value) {
+    return Number((value as { toString: () => string }).toString());
+  }
+  return 0;
 }
 
 export function round2(value: number) {

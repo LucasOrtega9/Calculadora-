@@ -1,6 +1,5 @@
 import {
   BudgetType,
-  CostCenter,
   type Prisma,
   ScheduleStatus,
 } from "@prisma/client";

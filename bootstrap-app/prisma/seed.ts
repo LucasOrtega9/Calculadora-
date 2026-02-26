@@ -13,7 +13,7 @@ async function ensureSampleBudget() {
       `Importação via Excel concluída: ano ${imported.year} com ${imported.importedLines} linhas.`,
     );
     return;
-  } catch (error) {
+  } catch {
     console.warn(
       "Pasta2.xlsx não encontrada para seed automático. Criando baseline sintético...",
     );

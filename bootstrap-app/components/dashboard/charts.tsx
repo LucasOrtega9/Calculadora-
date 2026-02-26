@@ -6,9 +6,6 @@ import {
   CartesianGrid,
   Line,
   LineChart,
-  PolarAngleAxis,
-  RadialBar,
-  RadialBarChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -28,7 +25,6 @@ type YtdData = { month: string; plannedAcc: number; realizedAcc: number };
 
 export function CommitmentGauge({ value }: { value: number }) {
   const normalized = Math.max(0, Math.min(value, 100));
-  const gaugeData = [{ name: "Comprometido", value: normalized }];
 
   return (
     <Card>
@@ -36,32 +32,14 @@ export function CommitmentGauge({ value }: { value: number }) {
         <CardTitle>Budget comprometido</CardTitle>
         <CardDescription>Realizado + Comprometido sobre orçamento YTD</CardDescription>
       </CardHeader>
-      <CardContent className="h-[250px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <RadialBarChart
-            data={gaugeData}
-            innerRadius="70%"
-            outerRadius="100%"
-            startAngle={90}
-            endAngle={-270}
-          >
-            <PolarAngleAxis
-              type="number"
-              domain={[0, 100]}
-              dataKey="value"
-              tick={false}
-            />
-            <RadialBar
-              minAngle={15}
-              background={{ fill: "#e4e4e7" }}
-              clockWise
-              dataKey="value"
-              fill="#111827"
-              cornerRadius={12}
-            />
-          </RadialBarChart>
-        </ResponsiveContainer>
-        <p className="mt-3 text-center text-2xl font-semibold number-tabular">
+      <CardContent>
+        <div className="h-3 w-full rounded-full bg-zinc-200">
+          <div
+            className="h-full rounded-full bg-zinc-900 transition-all"
+            style={{ width: `${normalized}%` }}
+          />
+        </div>
+        <p className="mt-4 text-center text-3xl font-semibold number-tabular">
           {normalized.toFixed(2)}%
         </p>
       </CardContent>
@@ -87,7 +65,7 @@ export function MomBudgetChart({ data }: { data: MonthData[] }) {
               tickFormatter={(value) => formatCurrency(value).replace("R$", "R$ ")}
             />
             <Tooltip
-              formatter={(value: number) => formatCurrency(value)}
+              formatter={(value) => formatCurrency(Number(value ?? 0))}
               contentStyle={{ borderRadius: 12, borderColor: "#e4e4e7" }}
             />
             <Bar dataKey="planned" fill="#a1a1aa" radius={[8, 8, 0, 0]} name="Orçado" />
@@ -117,7 +95,7 @@ export function YtdBudgetChart({ data }: { data: YtdData[] }) {
               tickFormatter={(value) => formatCurrency(value).replace("R$", "R$ ")}
             />
             <Tooltip
-              formatter={(value: number) => formatCurrency(value)}
+              formatter={(value) => formatCurrency(Number(value ?? 0))}
               contentStyle={{ borderRadius: 12, borderColor: "#e4e4e7" }}
             />
             <Line
