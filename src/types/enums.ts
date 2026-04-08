@@ -1,5 +1,7 @@
 export type Horizon = "curto" | "medio" | "longo";
 
+export type Quarter = "Q1" | "Q2" | "Q3" | "Q4";
+
 export type WorkType = "run" | "change" | "transform";
 
 export type Prioridade = "critica" | "alta" | "media" | "baixa";
