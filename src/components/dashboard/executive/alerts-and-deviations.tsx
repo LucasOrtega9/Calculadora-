@@ -59,11 +59,11 @@ export function AlertsAndDeviations({ items }: AlertsAndDeviationsProps) {
   return (
     <section className="rounded-2xl border border-[var(--btg-color-border)] bg-white p-6 shadow-sm">
       <header className="mb-5">
-        <h2 className="text-xl font-bold text-[var(--btg-color-text)]">
-          Alertas e Desvios Estrategicos
+        <h2 className="text-2xl font-bold text-[var(--btg-color-text)]">
+          2. Alertas e Desvios Estrategicos
         </h2>
         <p className="text-sm text-[var(--btg-color-text-muted)]">
-          Sinais executivos de risco e concentracao de esforco.
+          Riscos que exigem acao imediata.
         </p>
       </header>
 
@@ -124,6 +124,12 @@ export function AlertsAndDeviations({ items }: AlertsAndDeviationsProps) {
           ))}
         </ul>
       </div>
+
+      <p className="text-sm font-medium text-[var(--btg-color-text)]">
+        Insight: {runStatus.label === "Critico"
+          ? "Alta concentracao em run reduz espaco para transformacao."
+          : "Risco operacional sob controle relativo neste ciclo."}
+      </p>
     </section>
   );
 }

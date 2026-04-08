@@ -44,62 +44,69 @@ function PercentRow({ label, value }: RowProps) {
 
 export function StrategicAnalysis({ items }: StrategicAnalysisProps) {
   const metrics = buildExecutiveDashboardMetrics(items).strategicAnalysis;
-  const priorityBadgeClassName: Record<string, string> = {
-    critica:
-      "border-[var(--btg-color-danger)]/40 bg-[var(--btg-color-danger)]/12 text-[var(--btg-color-danger)]",
-    alta: "border-[var(--btg-color-warning)]/40 bg-[var(--btg-color-warning)]/20 text-[var(--btg-color-text)]",
-    media:
-      "border-[var(--btg-color-info)]/40 bg-[var(--btg-color-info)]/16 text-[var(--btg-color-text)]",
-    baixa: "border-[var(--btg-color-border)] bg-[var(--btg-color-surface)] text-[var(--btg-color-text-muted)]",
-  };
+  const strategyTop3 = metrics.effortByStrategicGoal.slice(0, 3);
+  const workTypeTop3 = metrics.workTypeEffort.slice(0, 3);
+  const formatPercent = (value: number) =>
+    `${new Intl.NumberFormat("pt-BR", {
+      maximumFractionDigits: 1,
+      minimumFractionDigits: 1,
+    }).format(value)}%`;
+
+  const keyMessage =
+    metrics.runEffortPercent >= 45
+      ? "Alto peso em run reduz a capacidade de transformacao."
+      : metrics.highAlignmentEffortPercent < 50
+        ? "Alinhamento alto abaixo do esperado para agenda executiva."
+        : "Foco estrategico equilibrado entre execucao e direcionamento.";
 
   return (
-    <section className="rounded-xl border border-[var(--btg-color-border)] bg-white p-6 shadow-sm">
-      <header className="mb-5 flex items-start justify-between gap-4">
-        <div>
-          <h2 className="text-lg font-bold text-[var(--btg-color-text)]">
-            6. Analise Estrategica
-          </h2>
-          <p className="text-sm text-[var(--btg-color-text-muted)]">
-            Validacao final do foco estrategico.
-          </p>
-        </div>
-        <div className="rounded-md border border-[var(--btg-color-border)] bg-[var(--btg-color-surface)] px-3 py-1.5 text-xs font-medium text-[var(--btg-color-text-muted)]">
-          Camada de suporte a decisao
-        </div>
+    <section className="space-y-4 rounded-xl border border-[var(--btg-color-border)] bg-white p-6 shadow-sm">
+      <header className="space-y-1">
+        <h2 className="text-xl font-bold text-[var(--btg-color-text)]">
+          6. Analise Estrategica
+        </h2>
+        <p className="text-sm text-[var(--btg-color-text-muted)]">
+          Foco final para decisao C-level.
+        </p>
       </header>
 
-      <div className="mb-5 grid gap-4 md:grid-cols-3">
-        <div className="rounded-lg border border-[var(--btg-color-border)] bg-[var(--btg-color-bg)] p-4">
+      <div className="grid gap-4 md:grid-cols-3">
+        <div className="rounded-lg border border-[var(--btg-color-border)] bg-[var(--btg-color-surface)] p-4">
           <p className="text-xs uppercase tracking-wide text-[var(--btg-color-text-muted)]">
             Alinhamento alto
           </p>
-          <p className="mt-1 text-2xl font-bold text-[var(--btg-color-text)]">
-            {`${formatNumber(Number(metrics.highAlignmentEffortPercent.toFixed(1)))}%`}
+          <p className="mt-1 text-2xl font-bold text-[var(--btg-color-primary)]">
+            {formatPercent(metrics.highAlignmentEffortPercent)}
           </p>
         </div>
-        <div className="rounded-lg border border-[var(--btg-color-border)] bg-[var(--btg-color-bg)] p-4">
+        <div className="rounded-lg border border-[var(--btg-color-border)] bg-[var(--btg-color-surface)] p-4">
           <p className="text-xs uppercase tracking-wide text-[var(--btg-color-text-muted)]">
             Esforco em run
           </p>
-          <p className="mt-1 text-2xl font-bold text-[var(--btg-color-text)]">
-            {`${formatNumber(Number(metrics.runEffortPercent.toFixed(1)))}%`}
+          <p
+            className={`mt-1 text-2xl font-bold ${
+              metrics.runEffortPercent >= 45
+                ? "text-[var(--btg-color-danger)]"
+                : "text-[var(--btg-color-text)]"
+            }`}
+          >
+            {formatPercent(metrics.runEffortPercent)}
           </p>
         </div>
-        <div className="rounded-lg border border-[var(--btg-color-border)] bg-[var(--btg-color-bg)] p-4">
+        <div className="rounded-lg border border-[var(--btg-color-border)] bg-[var(--btg-color-surface)] p-4">
           <p className="text-xs uppercase tracking-wide text-[var(--btg-color-text-muted)]">
-            Prioridade critica + alta
+            Esforco em prioridade alta/critica
           </p>
           <p className="mt-1 text-2xl font-bold text-[var(--btg-color-text)]">
-            {`${formatNumber(Number(metrics.criticalAndHighEffortPercent.toFixed(1)))}%`}
+            {formatPercent(metrics.criticalAndHighEffortPercent)}
           </p>
         </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        <SectionCard title="Esforco por objetivo estrategico">
+      <div className="grid gap-4 lg:grid-cols-2">
+        <SectionCard title="Objetivo estrategico">
           <div className="space-y-2">
-            {metrics.effortByStrategicGoal.map((item) => (
+            {strategyTop3.map((item) => (
               <PercentRow
                 key={String(item.key)}
                 label={String(item.key)}
@@ -109,29 +116,9 @@ export function StrategicAnalysis({ items }: StrategicAnalysisProps) {
           </div>
         </SectionCard>
 
-        <SectionCard title="Esforco por prioridade">
+        <SectionCard title="Tipo de trabalho">
           <div className="space-y-2">
-            {metrics.effortByPriority.map((item) => (
-              <div
-                key={String(item.key)}
-                className="flex items-center justify-between"
-              >
-                <span
-                  className={`inline-flex rounded-full border px-2 py-0.5 text-xs font-semibold capitalize ${priorityBadgeClassName[String(item.key)] ?? priorityBadgeClassName.media}`}
-                >
-                  {String(item.key)}
-                </span>
-                <span className="text-sm font-semibold text-[var(--btg-color-text)]">
-                  {`${formatNumber(Number(item.percentage.toFixed(1)))}%`}
-                </span>
-              </div>
-            ))}
-          </div>
-        </SectionCard>
-
-        <SectionCard title="Esforco por tipo">
-          <div className="space-y-2">
-            {metrics.workTypeEffort.map((item) => (
+            {workTypeTop3.map((item) => (
               <PercentRow
                 key={String(item.key)}
                 label={String(item.key)}
@@ -142,13 +129,12 @@ export function StrategicAnalysis({ items }: StrategicAnalysisProps) {
         </SectionCard>
       </div>
 
-      <div className="mt-4 rounded-lg border border-[var(--btg-color-border)] bg-[var(--btg-color-bg)] p-4">
+      <div className="rounded-lg border border-[var(--btg-color-border)] bg-[var(--btg-color-surface)] p-4">
         <p className="text-xs uppercase tracking-wide text-[var(--btg-color-text-muted)]">
-          Leitura executiva
+          Insight executivo
         </p>
         <p className="mt-1 text-sm text-[var(--btg-color-text)]">
-          Priorizar reducao de run elevado e elevar concentracao em alinhamento
-          alto para maior retorno estrategico.
+          {keyMessage}
         </p>
       </div>
     </section>

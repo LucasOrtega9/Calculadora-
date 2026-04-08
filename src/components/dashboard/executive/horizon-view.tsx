@@ -21,13 +21,14 @@ function formatPercent(value: number): string {
 
 export function HorizonView({ items }: HorizonViewProps) {
   const metrics = calculateHorizonMetrics(items);
+  const dominant = [...metrics].sort((a, b) => b.effortShare - a.effortShare)[0];
 
   return (
     <section className="rounded-xl border border-[var(--btg-color-border)] bg-white p-6 shadow-sm">
       <header className="mb-4">
-        <h2 className="text-lg font-bold">4. Visao de Horizonte</h2>
+        <h2 className="text-xl font-bold">4. Pipeline de Entregas</h2>
         <p className="text-sm text-[var(--btg-color-text-muted)]">
-          Entregas por horizonte com peso de esforco.
+          Curto, medio e longo prazo em visao unica.
         </p>
       </header>
 
@@ -66,6 +67,15 @@ export function HorizonView({ items }: HorizonViewProps) {
           </tbody>
         </table>
       </div>
+
+      <p className="mt-4 text-sm text-[var(--btg-color-text)]">
+        Insight:{" "}
+        <span className="font-semibold">
+          {dominant
+            ? `${horizonLabels[dominant.horizon]} concentra ${formatPercent(dominant.effortShare)} do esforco planejado.`
+            : "Sem distribuicao relevante de esforco."}
+        </span>
+      </p>
     </section>
   );
 }

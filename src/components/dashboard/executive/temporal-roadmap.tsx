@@ -22,6 +22,16 @@ const horizonBadge: Record<Initiative["horizon"], string> = {
 };
 
 export function TemporalRoadmap({ items }: TemporalRoadmapProps) {
+  const horizonCount = items.reduce<Record<Initiative["horizon"], number>>(
+    (acc, item) => {
+      acc[item.horizon] += 1;
+      return acc;
+    },
+    { curto: 0, medio: 0, longo: 0 },
+  );
+  const dominantHorizon = (["curto", "medio", "longo"] as Initiative["horizon"][])
+    .sort((a, b) => horizonCount[b] - horizonCount[a])[0];
+
   const roadmapByQuarter = quarters.map((quarter) => {
     const quarterItems = items
       .filter((item) => item.quarter === quarter)
@@ -37,10 +47,13 @@ export function TemporalRoadmap({ items }: TemporalRoadmapProps) {
 
   return (
     <section className="rounded-2xl border border-[var(--btg-color-border)] bg-white p-6 shadow-sm">
-      <header className="mb-4">
-        <h2 className="text-xl font-bold">Roadmap Temporal por Quarter</h2>
+      <header className="mb-4 space-y-1">
+        <h2 className="text-2xl font-bold">5. Roadmap Temporal</h2>
         <p className="text-sm text-[var(--btg-color-text-muted)]">
-          Entregas por trimestre com foco em prioridade e horizonte.
+          Pipeline de entregas por trimestre.
+        </p>
+        <p className="text-xs font-medium text-[var(--btg-color-text)]">
+          Insight: predominio atual em horizonte {dominantHorizon}.
         </p>
       </header>
 

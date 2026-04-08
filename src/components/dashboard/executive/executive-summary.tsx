@@ -1,7 +1,6 @@
 import { formatCurrencyBRL, formatNumber } from "@/lib/format";
 import {
   calculateExecutiveMetrics,
-  countByStrategicAlignment,
 } from "@/lib/executive-metrics";
 import type { Initiative } from "@/types/initiative";
 
@@ -13,35 +12,52 @@ type StatCardProps = {
   title: string;
   value: string;
   subtitle: string;
+  valueClassName?: string;
 };
 
-function StatCard({ title, value, subtitle }: StatCardProps) {
+function StatCard({ title, value, subtitle, valueClassName }: StatCardProps) {
   return (
-    <article className="rounded-xl border border-[var(--btg-color-border)] bg-white p-5 shadow-sm">
-      <p className="text-sm font-medium text-[var(--btg-color-text-muted)]">{title}</p>
-      <p className="mt-2 text-2xl font-bold text-[var(--btg-color-text)]">{value}</p>
-      <p className="mt-1 text-sm text-[var(--btg-color-text-muted)]">{subtitle}</p>
+    <article className="rounded-xl border border-[var(--btg-color-border)] bg-white p-4 shadow-sm">
+      <p className="text-xs font-semibold tracking-wide text-[var(--btg-color-text-muted)] uppercase">
+        {title}
+      </p>
+      <p
+        className={`mt-2 text-2xl font-bold text-[var(--btg-color-text)] ${valueClassName ?? ""}`}
+      >
+        {value}
+      </p>
+      <p className="mt-1 text-xs text-[var(--btg-color-text-muted)]">{subtitle}</p>
     </article>
   );
 }
 
 export function ExecutiveSummary({ items }: ExecutiveSummaryProps) {
   const metrics = calculateExecutiveMetrics(items);
-  const alignmentCount = countByStrategicAlignment(items);
+  const highAlignment = metrics.alignmentPercentByLevel.alto;
   const formatPercent = (value: number) =>
     `${new Intl.NumberFormat("pt-BR", {
       maximumFractionDigits: 1,
       minimumFractionDigits: 1,
     }).format(value)}%`;
 
+  const alignmentValueClassName =
+    highAlignment < 50
+      ? "text-[var(--btg-color-danger)]"
+      : highAlignment < 65
+        ? "text-[var(--btg-color-warning)]"
+        : "text-[var(--btg-color-success)]";
+
+  const executiveInsight =
+    highAlignment < 50
+      ? "Alinhamento alto abaixo do ideal: revisar priorizacao para ampliar foco estrategico."
+      : "Foco estrategico consistente com boa concentracao em iniciativas de alto alinhamento.";
+
   return (
-    <section className="space-y-5 rounded-2xl border border-[var(--btg-color-border)] bg-white p-6 shadow-sm">
+    <section className="space-y-4 rounded-2xl border border-[var(--btg-color-border)] bg-white p-6 shadow-sm">
       <header className="space-y-1">
-        <h2 className="text-2xl font-bold text-[var(--btg-color-text)]">
-          1. Resumo Executivo
-        </h2>
+        <h2 className="text-xl font-bold text-[var(--btg-color-text)]">1. Resumo Executivo</h2>
         <p className="text-sm text-[var(--btg-color-text-muted)]">
-          Visao consolidada em um bloco unico.
+          Principais indicadores para leitura imediata.
         </p>
       </header>
 
@@ -49,47 +65,31 @@ export function ExecutiveSummary({ items }: ExecutiveSummaryProps) {
         <StatCard
           title="Total de iniciativas"
           value={formatNumber(metrics.totalInitiatives)}
-          subtitle="Escopo total"
+          subtitle="Escopo do portfolio"
         />
         <StatCard
-          title="Horas planejadas"
+          title="Esforco total"
           value={formatNumber(metrics.totalEstimatedHours)}
-          subtitle="Carga consolidada"
+          subtitle="Horas planejadas"
         />
         <StatCard
           title="Custo total"
           value={formatCurrencyBRL(metrics.totalCost)}
-          subtitle="Investimento agregado"
+          subtitle="Investimento previsto"
         />
         <StatCard
-          title="Custo medio por iniciativa"
-          value={formatCurrencyBRL(metrics.averageCostPerInitiative)}
-          subtitle="Referencia executiva"
+          title="Alinhamento alto"
+          value={formatPercent(highAlignment)}
+          subtitle="Percentual do portfolio"
+          valueClassName={alignmentValueClassName}
         />
       </div>
 
-      <div className="rounded-xl border border-[var(--btg-color-border)] bg-[var(--btg-color-surface)] p-4">
+      <div className="rounded-xl border border-[var(--btg-color-border)] bg-[var(--btg-color-surface)] px-4 py-3">
         <p className="text-xs font-semibold tracking-wide text-[var(--btg-color-text-muted)] uppercase">
-          Alinhamento estrategico
+          Insight automatico
         </p>
-        <div className="mt-2 flex flex-wrap items-center gap-2">
-          <span className="rounded-full bg-[var(--btg-color-success)]/20 px-3 py-1 text-sm font-semibold">
-            Alto {formatPercent(metrics.alignmentPercentByLevel.alto)}
-          </span>
-          <span className="rounded-full bg-[var(--btg-color-warning)]/20 px-3 py-1 text-sm font-semibold">
-            Medio {formatPercent(metrics.alignmentPercentByLevel.medio)}
-          </span>
-          <span className="rounded-full bg-[var(--btg-color-danger)]/15 px-3 py-1 text-sm font-semibold">
-            Baixo {formatPercent(metrics.alignmentPercentByLevel.baixo)}
-          </span>
-        </div>
-        <p className="mt-2 text-xs text-[var(--btg-color-text-muted)]">
-          Base:{" "}
-          {formatNumber(
-            alignmentCount.alto + alignmentCount.medio + alignmentCount.baixo,
-          )}{" "}
-          iniciativas
-        </p>
+        <p className="mt-1 text-sm text-[var(--btg-color-text)]">{executiveInsight}</p>
       </div>
     </section>
   );

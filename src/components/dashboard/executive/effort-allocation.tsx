@@ -43,14 +43,19 @@ function TableBlock({
   title: string;
   rows: BucketItem[];
 }) {
+  const top = rows[0];
+
   return (
     <article className="rounded-xl border border-[var(--btg-color-border)] bg-white p-4">
-      <h3 className="mb-1 text-sm font-bold uppercase tracking-wide text-[var(--btg-color-text)]">
+      <h3 className="mb-1 text-lg font-bold text-[var(--btg-color-text)]">
         {title}
       </h3>
-      <p className="mb-3 text-xs text-[var(--btg-color-text-muted)]">
-        Distribuicao de horas planejadas
-      </p>
+      {top ? (
+        <p className="mb-3 text-sm text-[var(--btg-color-text-muted)]">
+          Maior concentracao em <span className="font-semibold">{top.label}</span> (
+          {formatPercent(top.percent)}).
+        </p>
+      ) : null}
       <table className="min-w-full text-left text-sm">
         <thead className="text-xs uppercase text-[var(--btg-color-text-muted)]">
           <tr>
@@ -62,7 +67,13 @@ function TableBlock({
           {rows.map((row) => (
             <tr key={row.label} className="border-t border-[var(--btg-color-border)]">
               <td className="py-2 font-medium">{row.label}</td>
-              <td className="py-2 text-right font-semibold">{formatPercent(row.percent)}</td>
+              <td
+                className={`py-2 text-right font-semibold ${
+                  row.percent >= 40 ? "text-[var(--btg-color-danger)]" : ""
+                }`}
+              >
+                {formatPercent(row.percent)}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -77,18 +88,20 @@ export function EffortAllocation({ items }: EffortAllocationProps) {
   const byBusinessArea = getBuckets(items, (item) => item.business_area);
 
   return (
-    <section className="rounded-xl border border-[var(--btg-color-border)] bg-[var(--btg-color-bg)] p-6 shadow-sm">
-      <header className="mb-4">
-        <h2 className="text-xl font-bold">Alocacao de Esforco</h2>
+    <section className="rounded-2xl border border-[var(--btg-color-border)] bg-white p-6 shadow-sm">
+      <header className="mb-5 space-y-1">
+        <h2 className="text-2xl font-bold text-[var(--btg-color-text)]">
+          3. Alocacao de Esforco
+        </h2>
         <p className="text-sm text-[var(--btg-color-text-muted)]">
-          Onde estamos consumindo energia no portfolio.
+          Distribuicao de esforco.
         </p>
       </header>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <TableBlock title="% por work_type" rows={byWorkType} />
-        <TableBlock title="% por squad" rows={bySquad} />
-        <TableBlock title="% por business_area" rows={byBusinessArea} />
+        <TableBlock title="Por tipo de trabalho" rows={byWorkType} />
+        <TableBlock title="Por squad" rows={bySquad} />
+        <TableBlock title="Por area de negocio" rows={byBusinessArea} />
       </div>
     </section>
   );
