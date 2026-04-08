@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+:root {
+  /* Brand */
+  --btg-color-primary: #307ae0;
+  --btg-color-primary-contrast: #ffffff;
+
+  /* Surfaces */
+  --btg-color-bg: #ffffff;
+  --btg-color-surface: #f2f2f2;
+
+  /* Text */
+  --btg-color-text: #373737;
+  --btg-color-text-muted: #626262;
+
+  /* Borders */
+  --btg-color-border: #cacaca;
+
+  /* Status */
+  --btg-color-success: #62c395;
+  --btg-color-warning: #ffca43;
+  --btg-color-danger: #eb3e48;
+  --btg-color-info: #5abed3;
+
+  /* Interaction */
+  --btg-color-focus: #195ab4;
+  --btg-color-disabled: #e5e5e5;
+  --btg-color-hover-overlay: rgba(48, 122, 224, 0.08);
+
+  /* Spacing */
+  --btg-space-1: 4px;
+  --btg-space-2: 8px;
+  --btg-space-3: 12px;
+  --btg-space-4: 16px;
+  --btg-space-5: 24px;
+  --btg-space-6: 32px;
+  --btg-space-7: 48px;
+  --btg-space-8: 64px;
+}
+
+@theme inline {
+  --color-background: var(--btg-color-bg);
+  --color-foreground: var(--btg-color-text);
+  --font-sans:
+    "Moderat", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+body {
+  background: var(--btg-color-bg);
+  color: var(--btg-color-text);
+  font-family:
+    "Moderat", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
