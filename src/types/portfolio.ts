@@ -1,13 +1,10 @@
-export type Horizon = "curto" | "medio" | "longo";
+import type {
+  Horizon,
+  InitiativeStatus,
+  StrategicAlignment,
+} from "@/types/enums";
 
-export type StrategicAlignment = "alto" | "medio" | "baixo";
-
-export type InitiativeStatus =
-  | "planejado"
-  | "em-andamento"
-  | "concluido"
-  | "bloqueado";
-
+// Tipo de compatibilidade para manter a UI atual sem alteracao de layout.
 export interface PortfolioItem {
   id: string;
   squad: string;
@@ -18,3 +15,14 @@ export interface PortfolioItem {
   strategicAlignment: StrategicAlignment;
   status: InitiativeStatus;
 }
+
+export type {
+  Horizon,
+  Prioridade,
+  InitiativeStatus,
+  StrategicAlignment,
+  StrategicGoal,
+  WorkType,
+} from "@/types/enums";
+
+export type { Initiative } from "@/types/initiative";
